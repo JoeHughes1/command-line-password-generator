@@ -9,14 +9,59 @@ const rl = readline.createInterface({
 });
 
 
-//1-ask user the password length
-//2-ask user if they want symbols included
-//generate password and copy it to the clipboard
+const lettersNumbers = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const symbols = '!@#$%&*_';
 
 
-rl.question("type anything", (test) => {
-    ncp.copy(test, () => {
-        console.log(`${test} copied to your clipboard`);
-        rl.close();
-    })
-});
+function askUser(){
+    rl.question("Enter a password length: ", length =>{
+        rl.question("Include special characters? y/n ", answer => {
+            let specialCharacters = false;
+            if(answer.toLowerCase() === 'y'){
+                specialCharacters = true;
+            } else if (answer.toLowerCase() === 'n'){
+                specialCharacters = false;
+            } else {
+                throw new Error("Invalid input")
+            }
+
+            let res = generatePassword(length, specialCharacters);
+            ncp.copy(res, () => {
+                console.log("Generated password! It has been copied to your clipboard.");
+                rl.close();
+            })
+        });
+    });
+}
+
+
+
+function generatePassword(length, specialCharacters){
+    let password = '';
+    let availableChars = '';
+
+    if(specialCharacters){
+        availableChars = lettersNumbers + symbols;
+    } else {
+        availableChars = lettersNumbers;
+    }
+
+    for(let i = 1; i <= length; i++){
+        password += randomCharacter(availableChars, availableChars.length);
+    }
+
+    return password;
+}
+
+
+function randomCharacter(string, max){
+    min = 0;
+    max = Math.floor(max);
+    let randomInt = Math.floor(Math.random() * (max - min) + min);
+
+    return string[randomInt];
+}
+
+
+
+askUser();
